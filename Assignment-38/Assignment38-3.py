@@ -1,19 +1,15 @@
-from pathlib import Path
-
 import pandas as pd
 
+def main():
+    df = pd.read_csv("student_performance_ml.csv")
 
-Border = "-" * 30
-DataPath = Path(__file__).with_name("student_performance_ml.csv")
+    print("Average studyhours of students :",df['StudyHours'].mean())
+    print("Average Attendance of students :",df['Attendance'].mean())
 
+    print("MAX Previous Score of students :",df['PreviousScore'].max())
+    print("MIN SleepHours of students :",df['SleepHours'].min())
 
-try:
-    df = pd.read_csv(DataPath)
-except FileNotFoundError:
-    print(f"Dataset not found: {DataPath}")
-    print("Place student_performance_ml.csv in the Assignment-38 folder.")
-else:
-    print("Average StudyHours:", df["StudyHours"].mean())
-    print("Average Attendance:", df["Attendance"].mean())
-    print("Maximum PreviousScore:", df["PreviousScore"].max())
-    print("Minimum SleepHours:", df["SleepHours"].min())
+    
+
+if __name__ == "__main__":
+    main()
