@@ -1,33 +1,32 @@
-from pathlib import Path
-
 import pandas as pd
-from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score,confusion_matrix
+def main():
+    df = pd.read_csv("student_performance_ml.csv")
+    X= df.drop(columns=["FinalResult"])
+    Y= df["FinalResult"]
+    x_train,x_test,y_train,y_test = train_test_split(X,Y,test_size=0.2,random_state=42)
+    model1 = DecisionTreeClassifier(max_depth=1)
 
+    model1 = model1.fit(x_train,y_train)
+    y_pred1 = model1.predict(x_test)
+    accuracy = accuracy_score(y_test,y_pred1)
+    print("Accuracy of Decision Tree Classifier with max_depth=1:", accuracy * 100, "%")
 
-DataPath = Path(__file__).with_name("student_performance_ml.csv")
-FeatureColumns = [
-    "StudyHours",
-    "Attendance",
-    "PreviousScore",
-    "AssignmentsCompleted",
-    "SleepHours",
-]
+    model2 = DecisionTreeClassifier(max_depth=3)
+    model2 = model2.fit(x_train,y_train)
+    y_pred2 = model2.predict(x_test)
+    accuracy = accuracy_score(y_test,y_pred2)
+    print("Accuracy of Decision Tree Classifier with max_depth=3:", accuracy * 100, "%")
 
-df = pd.read_csv(DataPath)
-X = df[FeatureColumns]
-y = df["FinalResult"]
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
+    model3 = DecisionTreeClassifier()
+    model3 = model3.fit(x_train,y_train)
+    y_pred3 = model3.predict(x_test)
+    accuracy = accuracy_score(y_test,y_pred3)
+    print("Accuracy of Decision Tree Classifier with max_depth=3:", accuracy * 100, "%")
 
-print("Testing accuracy for different max_depth values:")
-for max_depth in [1, 3, None]:
-    model = DecisionTreeClassifier(max_depth=max_depth, random_state=42)
-    model.fit(X_train, y_train)
-    accuracy = accuracy_score(y_test, model.predict(X_test))
-    print(f"max_depth={max_depth}: {accuracy * 100:.2f}%")
-
-print("A shallow tree may underfit, while an unrestricted tree can learn complex patterns")
-print("and may overfit. The best depth is the one that generalizes well to test data.")
+    
+if __name__ == "__main__":
+    main()

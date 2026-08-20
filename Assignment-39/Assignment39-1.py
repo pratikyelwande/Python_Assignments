@@ -1,29 +1,18 @@
-from pathlib import Path
-
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
+def main():
 
-DataPath = Path(__file__).with_name("student_performance_ml.csv")
-FeatureColumns = [
-    "StudyHours",
-    "Attendance",
-    "PreviousScore",
-    "AssignmentsCompleted",
-    "SleepHours",
-]
+    df = pd.read_csv("student_performance_ml.csv")
+    X= df.drop(columns=["FinalResult"])
+    Y= df["FinalResult"]
+    x_train,x_test,y_train,y_test = train_test_split(X,Y,test_size=0.2,random_state=42)
 
-df = pd.read_csv(DataPath)
-X = df[FeatureColumns]
-y = df["FinalResult"]
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
+    model = DecisionTreeClassifier()
 
-model = DecisionTreeClassifier(max_depth=5, random_state=42)
-model.fit(X_train, y_train)
-
-print("Decision Tree model created and trained successfully.")
-print("Training records:", len(X_train))
-print("Testing records:", len(X_test))
+    model.fit(x_train,y_train)
+    print("Model trained successfully!")
+if __name__ == "__main__":
+    main()

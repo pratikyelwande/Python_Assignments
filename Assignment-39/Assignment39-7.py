@@ -1,35 +1,26 @@
-from pathlib import Path
-
 import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score,confusion_matrix
+def main():
+    df = pd.read_csv("student_performance_ml.csv")
+    X= df.drop(columns=["FinalResult"])
+    Y= df["FinalResult"]
+    x_train,x_test,y_train,y_test = train_test_split(X,Y,test_size=0.2,random_state=42)
+    model1 = DecisionTreeClassifier(max_depth=1)
 
+    model1 = model1.fit(x_train,y_train)
+    y_pred1 = model1.predict(x_test)
 
-DataPath = Path(__file__).with_name("student_performance_ml.csv")
-FeatureColumns = [
-    "StudyHours",
-    "Attendance",
-    "PreviousScore",
-    "AssignmentsCompleted",
-    "SleepHours",
-]
+    newdata =[[6,85,66,7,7]]
+    prediction = model1.predict(newdata)
+    print("Prediction for new data:", prediction)
 
-df = pd.read_csv(DataPath)
-model = DecisionTreeClassifier(max_depth=5, random_state=42)
-model.fit(df[FeatureColumns], df["FinalResult"])
+    if prediction[0] == 1:
+        print("The student is passed.")
+    else:
+        print("The student is failed.")
 
-new_student = pd.DataFrame(
-    {
-        "StudyHours": [6],
-        "Attendance": [85],
-        "PreviousScore": [66],
-        "AssignmentsCompleted": [7],
-        "SleepHours": [7],
-    }
-)
-prediction = model.predict(new_student[FeatureColumns])[0]
-result = "Pass" if prediction == 1 else "Fail"
-
-print("New student details:")
-print(new_student.to_string(index=False))
-print("Predicted FinalResult:", prediction)
-print("Prediction:", result)
+if __name__ == "__main__":
+    main()
