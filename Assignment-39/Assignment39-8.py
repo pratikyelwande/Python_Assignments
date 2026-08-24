@@ -39,9 +39,5 @@ def main():
     cm = confusion_matrix(y_test,y_pred)
     print("Confusion Matrix:")
     print(cm)
-
-    
-
-
 if __name__ == "__main__":
     main()
