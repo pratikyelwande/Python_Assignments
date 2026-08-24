@@ -1,37 +1,23 @@
-from pathlib import Path
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score,confusion_matrix
 
+def main():
+    df= pd.read_csv("student_performance_ml.csv")
+    X = df.drop(columns=["FinalResult"],axis=1)
+    Y = df["FinalResult"]
+    x_train,x_test,y_train,y_test = train_test_split(X,Y,test_size=0.2,random_state=42)
 
-DataPath = Path(__file__).with_name("student_performance_ml.csv")
-FeatureColumns = [
-    "StudyHours",
-    "Attendance",
-    "PreviousScore",
-    "AssignmentsCompleted",
-    "SleepHours",
-]
+    model = DecisionTreeClassifier()
+    model = model.fit(x_train,y_train)
+    y_pred = model.predict(x_test)
 
-df = pd.read_csv(DataPath)
-X = df[FeatureColumns]
-y = df["FinalResult"]
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
-
-model = DecisionTreeClassifier(max_depth=5, random_state=42)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-
-misclassified = X_test.copy()
-misclassified["ActualResult"] = y_test
-misclassified["PredictedResult"] = y_pred
-misclassified = misclassified[misclassified["ActualResult"] != misclassified["PredictedResult"]]
-
-print("Misclassified students:")
-print(misclassified.to_string())
-print("\nNumber of misclassified students:", len(misclassified))
-print("A common pattern can be found by comparing their study hours, attendance, and previous scores")
-print("with the correctly classified students; borderline values often cause misclassification.")
+    misclassified = y_test != y_pred
+    wrong_stud = x_test[misclassified]
+    print("Misclassified Students:")
+    print(wrong_stud)   
+    print("Number of misclassified students:", len(wrong_stud))
+    
+if __name__ == "__main__":
+    main()

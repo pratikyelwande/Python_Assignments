@@ -1,32 +1,22 @@
-from pathlib import Path
-
 import pandas as pd
-from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score,confusion_matrix
+
+def main():
+    df= pd.read_csv("student_performance_ml.csv")
+    X = df.drop(columns=["FinalResult"],axis=1)
+    Y = df["FinalResult"]
+    random_states = [0,10,42]
+    for state in random_states:
+            x_train,x_test,y_train,y_test = train_test_split(X,Y,test_size=0.2,random_state=state)
+
+            model = DecisionTreeClassifier()
+            model = model.fit(x_train,y_train)
+            y_pred = model.predict(x_test)
+            accuracy = accuracy_score(y_test,y_pred)
+            print("Testing accuracy is :",accuracy*100,"%")
 
 
-DataPath = Path(__file__).with_name("student_performance_ml.csv")
-FeatureColumns = [
-    "StudyHours",
-    "Attendance",
-    "PreviousScore",
-    "AssignmentsCompleted",
-    "SleepHours",
-]
-
-df = pd.read_csv(DataPath)
-X = df[FeatureColumns]
-y = df["FinalResult"]
-
-print("Testing accuracy for different random states:")
-for random_state in [0, 10, 42]:
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=random_state, stratify=y
-    )
-    model = DecisionTreeClassifier(max_depth=5, random_state=random_state)
-    model.fit(X_train, y_train)
-    accuracy = accuracy_score(y_test, model.predict(X_test))
-    print(f"random_state={random_state}: {accuracy * 100:.2f}%")
-
-print("The result may change because random_state changes which records are used for testing.")
+if __name__ == "__main__":
+    main()

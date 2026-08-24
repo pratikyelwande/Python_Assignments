@@ -1,33 +1,31 @@
-from pathlib import Path
-
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score,confusion_matrix
 
+def main():
+    df= pd.read_csv("student_performance_ml.csv")
+    X = df.drop(columns=["FinalResult"],axis=1)
+    Y = df["FinalResult"]
+    x_train,x_test,y_train,y_test = train_test_split(X,Y,test_size=0.2,random_state=42)
 
-DataPath = Path(__file__).with_name("student_performance_ml.csv")
-FeatureColumns = [
-    "StudyHours",
-    "Attendance",
-    "PreviousScore",
-    "AssignmentsCompleted",
-    "SleepHours",
-]
+    model = DecisionTreeClassifier()
+    model = model.fit(x_train,y_train)
+    y_pred = model.predict(x_test)
+    accuracy_full= accuracy_score(y_test,y_pred)
+    print("Accuracy of the model is :",accuracy_full*100,"%")
 
-df = pd.read_csv(DataPath)
-model = DecisionTreeClassifier(max_depth=5, random_state=42)
-model.fit(df[FeatureColumns], df["FinalResult"])
-
-new_students = pd.DataFrame(
-    {
-        "StudyHours": [2.0, 4.5, 6.0, 7.5, 9.0],
-        "Attendance": [60, 75, 82, 90, 96],
-        "PreviousScore": [45, 58, 68, 78, 88],
-        "AssignmentsCompleted": [2, 4, 6, 8, 10],
-        "SleepHours": [5, 6, 7, 8, 8],
-    }
-)
-new_students["PredictedResult"] = model.predict(new_students[FeatureColumns])
-new_students["PredictedResult"] = new_students["PredictedResult"].map({0: "Fail", 1: "Pass"})
-
-print("Predictions for five new students:")
-print(new_students.to_string(index=False))
+    new_students = pd.DataFrame({
+    "StudyHours": [2, 5, 3, 7, 1],
+    "Attendance": [60, 90, 75, 95, 50],
+    "PreviousScore": [40, 80, 65, 90, 35],
+    "AssignmentsCompleted": [3, 9, 6, 10, 2],
+    "SleepHours": [7, 6, 8, 7, 5]
+})
+    predictions = model.predict(new_students)
+    print("Predictions for new students:", predictions)
+    for i ,pred in enumerate(predictions):
+        result = "Pass" if pred == 1 else "Fail"
+        print(f"Student {i+1}: {result}")
+if __name__ == "__main__":
+    main()
